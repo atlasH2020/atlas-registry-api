@@ -16,4 +16,4 @@ curl -X GET 'https://sensorsystems.iais.fraunhofer.de/api/services?template_name
 -H "Authorization: Bearer {{access_token}}"
 ```
 
-The full OpenAPI Specifications of the ATLAS Registry API can be found [here](https://sensorsystems.iais.fraunhofer.de/doc/?url=https://raw.githubusercontent.com/atlasH2020/atlas-registry-api/oas)  
+The full OpenAPI Specifications of the ATLAS Registry API can be found [here](https://sensorsystems.iais.fraunhofer.de/doc/?url=https://raw.githubusercontent.com/atlasH2020/atlas-registry-api/master/oas)  
