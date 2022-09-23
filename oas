@@ -1,0 +1,501 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ATLAS Registry API",
+    "description": "This documents describes the API of the ATLAS Registry",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://sensorsystems.iais.fraunhofer.de/api"
+    }
+  ],
+  "paths": {
+    "/services": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Retrieve services implementing a template",
+        "operationId": "findServices",
+        "parameters": [
+          {
+            "name": "template_name",
+            "in": "query",
+            "description": "ID of template for which to get services",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "template_version",
+            "in": "query",
+            "description": "lowest version number of the template that must be implemented",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "1.1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Service"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/services/{serviceId}": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Find service by ID",
+        "description": "Returns a single service",
+        "operationId": "getServiceById",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "description": "ID of service to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Service"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/services/{serviceId}/register": {
+      "post": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Dynamically register current participant with service",
+        "operationId": "registerClient",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "client registration parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "redirect_uris": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "client_id": {
+                      "type": "string"
+                    },
+                    "client_secret": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad parameter(s)s",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Service is disabled",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/services/{serviceId}/pairing": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Get pairing information",
+        "description": "Returns information necessary to pair with a service",
+        "operationId": "getPairingInfo",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicePairing"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Service is disabled",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/services/{serviceId}/api": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Get service API",
+        "description": "Returns information required to connect to the service",
+        "operationId": "getServiceApi",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceApi"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Service is disabled",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/services/{serviceId}/status": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Get service status",
+        "description": "Returns 204 (NO CONTENT) if service is enabled, 410 (GONE) if disabled",
+        "operationId": "getServiceStatus",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "service is enabled",
+            "content": {}
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Service is disabled",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/participants/{participantId}": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Find participant by ID",
+        "description": "Returns a participant",
+        "operationId": "getParticipantById",
+        "parameters": [
+          {
+            "name": "participantId",
+            "in": "path",
+            "description": "ID of participant to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Participant"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Participant not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Participant is disabled or deleted",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Service": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "template_name": {
+            "type": "string"
+          },
+          "template_version": {
+            "type": "string"
+          },
+          "participant_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "website_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "experimental": {
+            "type": "boolean",
+            "description": "Only present when 'true' to indicate that the service has not been fully validated for production but is available for experimental purposes (at own risk). Experimental services will never appear in lists but details can be queried by participant who know their id"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "template_name",
+          "template_version",
+          "participant_id"
+        ],
+        "example": {
+          "service_id": "com.agricircle.atlas.field_data",
+          "name": "com.agricircle.atlas.field_data",
+          "template_name": "field_data",
+          "template_version": "0.3",
+          "participant_id": "a5220f60-1b8f-4bf6-9abd-3e3aa9a1e21c",
+          "description": "AgriCircle's field data service",
+          "website_url": "https://staging.atlas.agricircle.com/h2020/field"
+        }
+      },
+      "ServicePairing": {
+        "type": "object",
+        "properties": {
+          "oauth2_auth_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "oauth2_token_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "oauth2_registration_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "oauth2_audience": {
+            "type": "string"
+          },
+          "participant_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "oauth2_auth_url",
+          "oauth2_token_url",
+          "participant_id"
+        ],
+        "example": {
+          "oauth2_auth_url": "https://sso.staging.agricircle.com/auth/realms/atlas/protocol/openid-connect/auth",
+          "oauth2_token_url": "https://sso.staging.agricircle.com/auth/realms/atlas/protocol/openid-connect/token",
+          "participant_id": "a5220f60-1b8f-4bf6-9abd-3e3aa9a1e21c"
+        }
+      },
+      "ServiceApi": {
+        "type": "object",
+        "properties": {
+          "participant_id": {
+            "type": "string"
+          },
+          "service_base_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "configuration_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "participant_id",
+          "service_base_url"
+        ],
+        "example": {
+          "participant_id": "a5220f60-1b8f-4bf6-9abd-3e3aa9a1e21c",
+          "service_base_url": "https://staging.atlas.agricircle.com/api/h2020/field"
+        }
+      },
+      "Participant": {
+        "type": "object",
+        "properties": {
+          "organization": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "organization"
+        ],
+        "example": {
+          "organization": "AgriCircle AG",
+          "country": "Switzerland"
+        }
+      }
+    },
+    "securitySchemes": {
+      "client_credentials": {
+        "type": "oauth2",
+        "description": "This API uses OAuth 2 with the client_credentials grant flow. [More info](https://oauth.net/2/grant-types/client-credentials/)",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://sensorsystems.iais.fraunhofer.de/auth/realms/participants/protocol/openid-connect/token",
+            "scopes": {
+              "openid": "open id",
+              "offline_access": "Require off-line access (required)"
+            }
+          }
+        }
+      }
+    }
+  }
+}
