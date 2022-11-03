@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "ATLAS Registry API",
-    "description": "This documents describes the API of the ATLAS Registry",
-    "version": "1.0.0"
+    "title": "ATLAS Registry Public API",
+    "description": "This documents describes the public API of the ATLAS Service Registry",
+    "version": "1.0.1"
   },
   "servers": [
     {
@@ -223,6 +223,107 @@
         }
       }
     },
+    "/services/{serviceId}/pairings": {
+      "get": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "List paired participants",
+        "description": "Returns all participants that have paired with our service. This operation can only be performed by the owner of the service.",
+        "operationId": "getParticipantPairingInfo",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceParticipantPairing"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Service is disabled",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "client_credentials": []
+          }
+        ],
+        "summary": "Lock/unlock participant's pairings",
+        "description": "If lock_reason is omitted or empty, the participant is unlocked. Otherwise the participant is locked. This operation can only be performed by the owner of the service.",
+        "operationId": "lockUnlockParticipantPairings",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "participant_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lock_message",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "Service not found",
+            "content": {}
+          },
+          "410": {
+            "description": "Service is disabled",
+            "content": {}
+          }
+        }
+      }
+    },
     "/services/{serviceId}/api": {
       "get": {
         "security": [
@@ -426,6 +527,10 @@
           },
           "participant_id": {
             "type": "string"
+          },
+          "via_atlas": {
+            "type": "boolean",
+            "description": "When true, the participant's ATLAS credentials must be used as client id/secret"
           }
         },
         "required": [
@@ -437,6 +542,40 @@
           "oauth2_auth_url": "https://sso.staging.agricircle.com/auth/realms/atlas/protocol/openid-connect/auth",
           "oauth2_token_url": "https://sso.staging.agricircle.com/auth/realms/atlas/protocol/openid-connect/token",
           "participant_id": "a5220f60-1b8f-4bf6-9abd-3e3aa9a1e21c"
+        }
+      },
+      "ServiceParticipantPairing": {
+        "description": "This information is available only for services paired 'via_atlas'",
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "when a participant's user first paired with this service"
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last time the pairing status was updated"
+          },
+          "from_participant_id": {
+            "type": "string",
+            "description": "The participant from which the pairing originated"
+          },
+          "lock_reason": {
+            "type": "string",
+            "description": "If null or omitted, the participant's pairings are active. Otherwise no token will be delivered to this participant for the reason described"
+          }
+        },
+        "required": [
+          "created",
+          "modified",
+          "from_participant_id"
+        ],
+        "example": {
+          "created": "2022-11-07T15:42:00Z",
+          "modified": "2022-11-07T15:42:00Z",
+          "from_participant_id": "a5220f60-1b8f-4bf6-9abd-3e3aa9a1e21c"
         }
       },
       "ServiceApi": {
