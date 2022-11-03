@@ -1040,12 +1040,33 @@
           "name": {
             "type": "string",
             "example": "My tractor"
+          },
+          "platform_id": {
+            "type": "string",
+            "enum": [
+              "egw",
+              "appengine",
+              "other"
+            ],
+            "description": "the platform to which the equipment is connected to send & receive task info. When no platform is specified, download of task info in ISOXML or shapefile is possible"
+          },
+          "platform_info": {
+            "type": "string",
+            "description": "additional platform-specific information. This might typically be of the format: other:<i>proprietary_id</i>."
+          },
+          "platform_format": {
+            "type": "string",
+            "description": "Format of the task info data. Could be: isoxml, shapefile</code>, other_<i>proprietary</i>"
           }
         },
         "required": [
           "id",
           "name"
-        ]
+        ],
+        "example": {
+          "id": "b86c7fa9-a3be-4284-aee7-25f756acd50e",
+          "name": "My tractor"
+        }
       },
       "AdviceURN": {
         "type": "string",
