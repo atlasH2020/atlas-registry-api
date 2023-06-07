@@ -469,6 +469,9 @@
           "name": {
             "type": "string"
           },
+          "display_name": {
+            "type": "string"
+          },
           "template_name": {
             "type": "string"
           },
@@ -493,6 +496,7 @@
         "required": [
           "id",
           "name",
+          "display_name",
           "template_name",
           "template_version",
           "participant_id"
@@ -500,6 +504,7 @@
         "example": {
           "service_id": "com.agricircle.atlas.field_data",
           "name": "com.agricircle.atlas.field_data",
+          "display_name": "AgriCircle Field Data",
           "template_name": "field_data",
           "template_version": "0.3",
           "participant_id": "a5220f60-1b8f-4bf6-9abd-3e3aa9a1e21c",
